@@ -39,7 +39,7 @@ Settings.embed_model = HuggingFaceEmbedding(cache_folder="./tmp/models/")
 # )
 
 from llama_index.llms.gemini import Gemini
-Settings.llm = Gemini(temperature=8.2)
+Settings.llm = Gemini(temperature=.82)
 # Settings.llm = HuggingFaceLLM(
 #     model_name=TEXT_GENERATION_MODEL_REPO,
 #     tokenizer=AutoTokenizer.from_pretrained(
