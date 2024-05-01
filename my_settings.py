@@ -4,7 +4,7 @@ import os
 import torch
 from dotenv import load_dotenv
 from huggingface_hub import login
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding,HuggingFaceInferenceAPIEmbedding
 from llama_index.core import Settings
 from llama_index.llms.huggingface import HuggingFaceInferenceAPI
 
@@ -14,10 +14,10 @@ class LLMSettings():
         self,
         model_name,
         query_wrapper_prompt=None,
-        max_new_tokens=256,
+        max_new_tokens=4096,
         context_window=2048,
         device_map="auto",
-        temperature=0.25,
+        temperature=0.80,
         do_sample=False,
         max_length=2048,
         torch_dtype=torch.float32,
@@ -38,6 +38,8 @@ class LLMSettings():
         # Authenticate with Hugging Face
         self._authenticate_with_huggingface()
 
+        self._configure_logging()
+
     def _configure_mongodb(self):
         self.MONGO_DB_URI = os.getenv("MONGO_DB_URI")
 
@@ -53,9 +55,17 @@ class LLMSettings():
         if token:
             login(token=token, write_permission=True, add_to_git_credential=True)
 
-    def _set_huggingface_embedding(self):
-        Settings.embed_model = HuggingFaceEmbedding()
-
+    def _set_huggingface_embedding(self, model=None,local=False):
+        if local:
+            print("local model embedding")
+            Settings.embed_model = (
+                HuggingFaceEmbedding() if model is None else HuggingFaceEmbedding(model_name=model,cache_folder="./tmp/")
+            )
+        else:
+            print("inference api embedding")
+            Settings.embed_model = (
+                HuggingFaceInferenceAPIEmbedding() if model is None else HuggingFaceInferenceAPIEmbedding(model_name=model)
+            )
     def _setup_huggingface_llm_inference_api(self):
         from llama_index.core import PromptTemplate
 
@@ -72,12 +82,15 @@ class LLMSettings():
             device_map=self.device_map,
             tokenizer_kwargs={"max_length": self.max_length},
             model_kwargs={"torch_dtype": self.torch_dtype},
+            
         )
 
         # Set chunk size
         Settings.chunk_size = 512
         Settings.llm = self.llm
+        Settings.num_output = 10000
 
 
 # Example usage:
-# model = MyHuggingFaceModel(model_name="mistralai/Mixtral-8x7B-Instruct-v0.1")
+
+model = LLMSettings(model_name="mistralai/Mixtral-8x7B-Instruct-v0.1")
