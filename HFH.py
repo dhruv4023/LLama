@@ -41,14 +41,14 @@ Settings.embed_model = HuggingFaceEmbedding(
 )
 
 #### Inference API
-Settings.llm = HuggingFaceInferenceAPI(
-    tokenizer_name=MIXTRAL_TEXT_GENERATION_MODEL_REPO,
-    model_name=MIXTRAL_TEXT_GENERATION_MODEL_REPO,
-    device_map="cuda:0",
-)
+# Settings.llm = HuggingFaceInferenceAPI(
+#     tokenizer_name=MIXTRAL_TEXT_GENERATION_MODEL_REPO,
+#     model_name=MIXTRAL_TEXT_GENERATION_MODEL_REPO,
+#     device_map="cuda:0",
+# )
 
-# from llama_index.llms.gemini import Gemini
-# Settings.llm = Gemini(temperature=0.82)
+from llama_index.llms.gemini import Gemini
+Settings.llm = Gemini(temperature=0.82,max_tokens=10000)
 
 
 #### Local LLM
