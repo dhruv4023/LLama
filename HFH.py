@@ -6,7 +6,8 @@ MIXTRAL_TEXT_GENERATION_MODEL_REPO = "mistralai/Mixtral-8x7B-Instruct-v0.1"
 # TEXT_GENERATION_MODEL_REPO = "gradientai/Llama-3-8B-Instruct-Gradient-1048k"
 # TEXT_GENERATION_MODEL_REPO = "StabilityAI/stablelm-tuned-alpha-3b"
 # TEXT_GENERATION_MODEL_REPO = "Writer/camel-5b-hf"
-
+TEXT_GENERATION_MODEL_REPO = "HuggingFaceH4/zephyr-7b-alpha"
+# EMBEDDING_MODEL = "text-multilingual-embedding-preview-0409"
 
 import logging
 import sys
@@ -28,18 +29,30 @@ from llama_index.embeddings.huggingface import (
     HuggingFaceEmbedding,
 )
 from llama_index.llms.huggingface import HuggingFaceInferenceAPI, HuggingFaceLLM
+from llama_index.core.node_parser import SentenceSplitter
 
 
-Settings.embed_model = HuggingFaceEmbedding(cache_folder="./tmp/models/")
+Settings.text_splitter = SentenceSplitter(chunk_size=1024, chunk_overlap=20)
 
-# Settings.llm = HuggingFaceInferenceAPI(
-#     tokenizer_name=MIXTRAL_TEXT_GENERATION_MODEL_REPO,
-#     model_name=MIXTRAL_TEXT_GENERATION_MODEL_REPO,
-#     device_map="auto",
-# )
+Settings.embed_model = HuggingFaceEmbedding(
+    cache_folder="./tmp/models/",
+    # model_name=EMBEDDING_MODEL,
+    # tokenizer_name=EMBEDDING_MODEL,
+)
 
-from llama_index.llms.gemini import Gemini
-Settings.llm = Gemini(temperature=.82)
+#### Inference API
+Settings.llm = HuggingFaceInferenceAPI(
+    tokenizer_name=MIXTRAL_TEXT_GENERATION_MODEL_REPO,
+    model_name=MIXTRAL_TEXT_GENERATION_MODEL_REPO,
+    device_map="cuda:0",
+)
+
+# from llama_index.llms.gemini import Gemini
+# Settings.llm = Gemini(temperature=0.82)
+
+
+#### Local LLM
+
 # Settings.llm = HuggingFaceLLM(
 #     model_name=TEXT_GENERATION_MODEL_REPO,
 #     tokenizer=AutoTokenizer.from_pretrained(
@@ -50,8 +63,8 @@ Settings.llm = Gemini(temperature=.82)
 #     device_map="auto", # "cuda:0"
 #     context_window=512,
 #     tokenizer_kwargs={"max_length": 2048},
-# #     model_kwargs={"torch_dtype": torch.float16},
-# # )
+#     model_kwargs={"torch_dtype": torch.float16},
+# )
 
 # Settings.llm = HuggingFaceLLM(
 #     context_window=2048,
