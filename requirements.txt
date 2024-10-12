@@ -1,12 +1,12 @@
 python-dotenv==1.0.0
 
-llama-index==0.10.0
 InstructorEmbedding==1.0.1
 torch==2.2.2+cu118
-#==2.2.2
+
 scipy==1.11.4
-llama-index-embeddings-huggingface
+llama-index==0.10.0
 llama-index-llms-huggingface
+llama-index-embeddings-huggingface
 transformers==4.18.0
-faiss-cpu
+
 sentence_transformers

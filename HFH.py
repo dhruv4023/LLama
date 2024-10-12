@@ -2,7 +2,6 @@
 # TEXT_GENERATION_MODEL_REPO = "microsoft/Phi-3-mini-4k-instruct"
 # TEXT_GENERATION_MODEL_REPO = "meta-llama/Meta-Llama-3-8B"
 # TEXT_GENERATION_MODEL_REPO = "nvidia/Llama3-ChatQA-1.5-8B"
-TEXT_GENERATION_MODEL_REPO = "thenlper/gte-small"
 # TEXT_GENERATION_MODEL_REPO = "openai/whisper-large-v3"
 # TEXT_GENERATION_MODEL_REPO = "gradientai/Llama-3-8B-Instruct-Gradient-1048k"
 # TEXT_GENERATION_MODEL_REPO = "StabilityAI/stablelm-tuned-alpha-3b"
@@ -11,6 +10,9 @@ TEXT_GENERATION_MODEL_REPO = "thenlper/gte-small"
 # TEXT_GENERATION_MODEL_REPO = "microsoft/Phi-3-mini-4k-instruct"
 # TEXT_GENERATION_MODEL_REPO = "openai-community/gpt2"
 EMBEDDING_MODEL = "sentence-transformers/paraphrase-MiniLM-L6-v2"
+# EMBEDDING_MODEL =  "thenlper/gte-small"
+# TEXT_GENERATION_MODEL_REPO = "thenlper/gte-small"
+TEXT_GENERATION_MODEL_REPO = "mistralai/Mistral-7B-v0.1"
 
 
 import logging
@@ -37,20 +39,18 @@ from llama_index.core.node_parser import SentenceSplitter
 
 Settings.text_splitter = SentenceSplitter(chunk_size=1024, chunk_overlap=20)
 
-Settings.embed_model = HuggingFaceEmbedding(
-    cache_folder="./tmp/models/",
-    model_name=EMBEDDING_MODEL,
-)
+Settings.embed_model = HuggingFaceEmbedding(model_name=EMBEDDING_MODEL)
 
 #### Inference API
-# Settings.llm = HuggingFaceInferenceAPI(
-#     tokenizer_name=MIXTRAL_TEXT_GENERATION_MODEL_REPO,
-#     model_name=MIXTRAL_TEXT_GENERATION_MODEL_REPO,
-#     device_map="cuda:0",
-# )
+Settings.llm = HuggingFaceInferenceAPI(
+    tokenizer_name=TEXT_GENERATION_MODEL_REPO,
+    model_name=TEXT_GENERATION_MODEL_REPO,
+    device_map="cuda:0",
+)
 
-from llama_index.llms.gemini import Gemini
-Settings.llm = Gemini(temperature=0.82,max_tokens=10000)
+# from llama_index.llms.gemini import Gemini
+
+# Settings.llm = Gemini(temperature=0.82, max_tokens=10000)
 
 
 # ### Local LLM
@@ -70,7 +70,6 @@ Settings.llm = Gemini(temperature=0.82,max_tokens=10000)
 #     model_kwargs={
 #         "torch_dtype": torch.float16,
 #         # "pad_token_id": generator.tokenizer.eos_token_id,
-#         "offload_folder": "./tmp/offload",
 #     },
 # )
 
